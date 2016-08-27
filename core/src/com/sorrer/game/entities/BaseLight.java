@@ -41,13 +41,15 @@ public class BaseLight extends Entity{
 	
 	float x,y;
 	
+	LightSourceType lType;
+	
 	public BaseLight(LightSourceType l, float x, float y){
 		
-
+		this.lType = l;
 		
 		this.ID = EntityID.light;
 		
-		timer = new Timer(1000 * 60);
+		timer = new Timer(1000 * 20);
 		timer.start();
 		
 		this.x = x;
@@ -74,7 +76,7 @@ public class BaseLight extends Entity{
 			this.fuelBurnRate = 10;
 			this.brightness = 0.8f;
 			break;
-		case pit_fire:
+		case fire_pit:
 			this.diameter = Units.metersToPixels(2f);
 			this.fuelMax = 50;
 			this.fuelBurnRate = 4;
@@ -121,11 +123,11 @@ public class BaseLight extends Entity{
 			this.diameterAdjustment = -(this.diameter * timer.getProgress());
 			this.brightnessAdjustment = -(timer.getProgress());
 			
-			if(this.diameterAdjustment < this.diameter){
+			if(this.diameter + this.diameterAdjustment < 0){
 				this.diameterAdjustment = -this.diameter;
 			}
 			
-			if(this.brightnessAdjustment < this.brightness){
+			if(this.brightness + this.brightnessAdjustment < 0){
 				this.brightnessAdjustment = -this.brightness;
 			}
 		}else{
@@ -133,10 +135,12 @@ public class BaseLight extends Entity{
 			this.brightnessAdjustment = 0;
 		}
 		
-		this.color = new Color(this.color.r, this.color.g, this.color.b, this.brightness - this.brightnessAdjustment);
+		this.color = new Color(this.color.r, this.color.g, this.color.b, this.brightness + this.brightnessAdjustment);
 		this.light.setColor(this.color);
-		this.light.setDistance(this.diameter - this.diameterAdjustment);
+		this.light.setDistance(this.diameter + this.diameterAdjustment);
 		this.light.setPosition(getCenterPos());
+		
+		System.out.println( this.lType + " " + this.currentStoredFuel + " " + this.fuelMax + " " + this.fuelBurnRate + " " + this.diameterAdjustment + " " + this.timer.getProgress() + " " + this.getCenterPos());
 	}
 
 	@Override
@@ -158,6 +162,16 @@ public class BaseLight extends Entity{
 		float w = (this.isBurntOut ? this.burntOut.getWidth() : this.base.getWidth());
 		float h = (this.isBurntOut ? this.burntOut.getHeight() : this.base.getHeight());
 		return new Vector2(this.x + w/2, this.y + h/2);
+	}
+
+	@Override
+	public Vector2 getPos() {
+		return new Vector2(x,y);
+	}
+
+	@Override
+	public Vector2 getSize() {
+		return (this.isBurntOut ? new Vector2(this.burntOut.getWidth(), this.burntOut.getHeight()) : new Vector2(this.base.getWidth(), this.base.getHeight()));
 	}
 
 }

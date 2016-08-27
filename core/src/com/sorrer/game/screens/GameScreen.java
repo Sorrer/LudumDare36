@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.sorrer.game.CoreGame;
+import com.sorrer.game.entities.BaseLight;
+import com.sorrer.game.entities.LightSourceType;
 import com.sorrer.utils.entity.EntityManager;
 
 public class GameScreen implements Screen{
@@ -23,14 +25,21 @@ public class GameScreen implements Screen{
 	public GameScreen(CoreGame g){
 		this.game = g;
 		
-		b = new SpriteBatch();
-		sr = new ShapeRenderer();
-		buildings = new EntityManager(world, b, sr);
+		this.b = new SpriteBatch();
+		this.sr = new ShapeRenderer();
 		
 		this.cam = new OrthographicCamera();
 		cam.viewportWidth = Gdx.graphics.getWidth();
 		cam.viewportHeight = Gdx.graphics.getHeight();
+		cam.position.set(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, 0);
 		cam.update();
+		
+		this.buildings = new EntityManager(cam, world, b, sr);
+		
+		BaseLight bL = new BaseLight(LightSourceType.fire_pit, Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
+		bL.addFuel(8);
+		
+		this.buildings.add(bL);
 	}
 	
 	@Override
@@ -48,6 +57,8 @@ public class GameScreen implements Screen{
 		b.begin();
 			this.buildings.draw();
 		b.end();
+		
+		this.buildings.drawLights();
 		
 	}
 	

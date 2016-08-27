@@ -2,6 +2,7 @@ package com.sorrer.utils.entity;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.sorrer.utils.component.Component;
 import com.sorrer.utils.component.ComponentManager;
 
@@ -44,4 +45,6 @@ public abstract class Entity {
 	public abstract void draw(SpriteBatch b, ShapeRenderer sr);
 	public abstract void dispose();
 	public abstract void addLights(RayHandler rayH);
+	public abstract Vector2 getPos();
+	public abstract Vector2 getSize();
 }

@@ -22,8 +22,11 @@ public class EntityManager implements Serializable{
 	private ShapeRenderer sr;
 	private OrthographicCamera cam;
 	
-	public EntityManager(World world, SpriteBatch b, ShapeRenderer sr){
+	public EntityManager(OrthographicCamera cam2, World world, SpriteBatch b2, ShapeRenderer sr2){
 		rays = new RayHandler(world);
+		this.b = b2;
+		this.sr = sr2;
+		this.cam = cam2;
 	}
 	
 	public void setBatch(SpriteBatch b){

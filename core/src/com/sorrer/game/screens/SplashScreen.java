@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.sorrer.game.CoreGame;
 import com.sorrer.utils.Assets;
+import com.sorrer.utils.PrintLog;
 import com.sorrer.utils.Timer;
 
 import box2dLight.PointLight;
@@ -68,7 +69,7 @@ public class SplashScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		
-		if(Gdx.input.isKeyPressed(Keys.ANY_KEY) && !oncePressed){
+		if((Gdx.input.isKeyPressed(Keys.ANY_KEY) || Gdx.input.isTouched()) && !oncePressed){
 			oncePressed = true;
 			this.splashCount = 3;
 		}
@@ -145,8 +146,8 @@ public class SplashScreen implements Screen {
 			b.setColor(1, 1, 1, lightSensitivity);
 			light.setColor(new Color(245f / 255f, 245f / 255f, 245f / 255f, lightSensitivity * .9f));
 		}else if(splashCount == 4){
+			PrintLog.printGame("Moving to game screen");
 			game.setScreen(new GameScreen(game));
-			
 		}
 		
 	}
