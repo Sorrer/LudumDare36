@@ -1,5 +1,5 @@
 package com.sorrer.utils.entity;
 
 public enum EntityID {
-	none
+	none, light;
 }

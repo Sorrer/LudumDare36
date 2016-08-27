@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.sorrer.game.CoreGame;
+import com.sorrer.utils.entity.EntityManager;
 
 public class GameScreen implements Screen{
 	
@@ -15,11 +16,14 @@ public class GameScreen implements Screen{
 	SpriteBatch b;
 	ShapeRenderer sr;
 	
+	EntityManager buildings;
+	
 	public GameScreen(CoreGame g){
 		this.game = g;
 		
 		b = new SpriteBatch();
 		sr = new ShapeRenderer();
+		buildings = new EntityManager();
 		
 		this.cam = new OrthographicCamera();
 		cam.viewportWidth = Gdx.graphics.getWidth();
@@ -37,16 +41,16 @@ public class GameScreen implements Screen{
 		update();
 		
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		Gdx.gl.glClearColor(75, 180, 90, 1);
+		Gdx.gl.glClearColor(75f / 255f, 180 / 255f, 90 / 255f, 1);
 		b.setProjectionMatrix(cam.combined);
 		b.begin();
-		
+			this.buildings.draw(b, sr);
 		b.end();
 		
 	}
 	
 	public void update(){
-		
+		this.buildings.update();
 	}
 
 	@Override

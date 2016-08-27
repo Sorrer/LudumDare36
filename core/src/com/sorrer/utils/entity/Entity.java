@@ -1,6 +1,7 @@
 package com.sorrer.utils.entity;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.sorrer.utils.component.Component;
 import com.sorrer.utils.component.ComponentManager;
 
@@ -37,6 +38,6 @@ public abstract class Entity {
 	}
 	
 	public abstract void update();
-	public abstract void draw(SpriteBatch b);
+	public abstract void draw(SpriteBatch b, ShapeRenderer sr);
 	public abstract void dispose();
 }

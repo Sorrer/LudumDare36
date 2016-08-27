@@ -16,6 +16,7 @@ public class Timer {
 	public void start(){
 //		PrintLog.printSys("Starting timer for " + countTo + " milliseconds");
 		done = false;
+		cur = System.currentTimeMillis();
 		this.paused = false;
 		worker = new Thread(new Worker());
 		worker.start();

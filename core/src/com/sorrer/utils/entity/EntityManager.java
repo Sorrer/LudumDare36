@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class EntityManager implements Serializable{
 	private static final long serialVersionUID = -4300150299681062101L;
@@ -29,7 +30,7 @@ public class EntityManager implements Serializable{
 		updateQueue();
 	}
 	
-	public void draw(SpriteBatch b){
+	public void draw(SpriteBatch b, ShapeRenderer sr){
 		for(Entity e: entities){
 			if(e.isTrash()){
 				e.dispose();
@@ -37,7 +38,7 @@ public class EntityManager implements Serializable{
 				remove(e);
 				continue;
 			}
-			e.draw(b);
+			e.draw(b, sr);
 		}
 		
 		updateQueue();

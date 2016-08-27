@@ -3,6 +3,7 @@ package com.sorrer.game.screens;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.sorrer.game.CoreGame;
+import com.sorrer.utils.Assets;
 import com.sorrer.utils.Timer;
 
 import box2dLight.PointLight;
@@ -49,6 +51,8 @@ public class SplashScreen implements Screen {
 		b = new SpriteBatch();
 
 		timer = new Timer(splashBegin);
+		
+		Assets.load();
 
 	}
 
@@ -59,9 +63,16 @@ public class SplashScreen implements Screen {
 
 	float nextFlicker = 0;
 	float lastFlicker = 0;
-	
+	boolean switchL = true;	
+	boolean oncePressed = false;
 	@Override
 	public void render(float delta) {
+		
+		if(Gdx.input.isKeyPressed(Keys.ANY_KEY) && !oncePressed){
+			oncePressed = true;
+			this.splashCount = 3;
+		}
+		
 		cam.viewportWidth = Gdx.graphics.getWidth();
 		cam.viewportHeight = Gdx.graphics.getHeight();
 		cam.position.set(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 0);
@@ -69,7 +80,6 @@ public class SplashScreen implements Screen {
 		
 		light.setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
 		
-		System.out.println(splashCount);
 		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		rayHandler.updateAndRender();
 		b.setProjectionMatrix(cam.combined);
@@ -120,11 +130,20 @@ public class SplashScreen implements Screen {
 			}
 			Gdx.gl20.glClearColor(0, 0, 0, timer.getProgress());
 		} else if (splashCount == 3) {
-			if (timer.isDone()) {
-				splashCount++;
+
+			float lightSensitivity = (switchL ? 1  - timer.getProgress() : timer.getProgress());
+			
+			if(timer.isDone()){
+				if (Assets.manager.update()) {
+					splashCount++;
+					return;
+				}
+				timer.start();
+				switchL = (switchL ? false : true);
 			}
-			b.setColor(1, 1, 1, 1 - timer.getProgress());
-			light.setColor(new Color(245f / 255f, 245f / 255f, 245f / 255f, 1 - timer.getProgress() * .9f));
+			
+			b.setColor(1, 1, 1, lightSensitivity);
+			light.setColor(new Color(245f / 255f, 245f / 255f, 245f / 255f, lightSensitivity * .9f));
 		}else if(splashCount == 4){
 			game.setScreen(new GameScreen(game));
 			
