@@ -46,7 +46,7 @@ public class GameScreen implements Screen{
 		Gdx.gl.glClearColor(75f / 255f, 180 / 255f, 90 / 255f, 1);
 		b.setProjectionMatrix(cam.combined);
 		b.begin();
-			this.buildings.draw(b, sr);
+			this.buildings.draw();
 		b.end();
 		
 	}
