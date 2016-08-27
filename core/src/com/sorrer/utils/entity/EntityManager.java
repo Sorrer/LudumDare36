@@ -6,7 +6,12 @@ import java.util.LinkedList;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
+import com.sorrer.utils.CamUtils;
+import com.sorrer.utils.Config;
 
 import box2dLight.RayHandler;
 
@@ -24,6 +29,7 @@ public class EntityManager implements Serializable{
 	
 	public EntityManager(OrthographicCamera cam2, World world, SpriteBatch b2, ShapeRenderer sr2){
 		rays = new RayHandler(world);
+		rays.setAmbientLight(Config.AMBIENT_LIGHT);
 		this.b = b2;
 		this.sr = sr2;
 		this.cam = cam2;
@@ -66,10 +72,26 @@ public class EntityManager implements Serializable{
 				remove(e);
 				continue;
 			}
-			e.draw(b, sr);
+			if(new Rectangle(cam.position.x - cam.viewportWidth/2f, cam.position.y - cam.viewportHeight/2f, cam.viewportWidth, cam.viewportHeight).overlaps(e.getRectangle())){
+				e.draw(b, sr);
+			}
 		}
 		
 		updateQueue();
+	}
+	
+	public Entity getHoveredOver(){
+		Entity s = new PlaceholderEntity();
+		for(Entity e: entities){
+			Vector2 ePos = e.getPos();
+			Vector2 eSize = e.getSize();
+			Vector3 mosPos = CamUtils.mouseWorldCoords(cam);
+			Rectangle r = new Rectangle(ePos.x, ePos.y, eSize.x, eSize.y);
+			if(r.contains(mosPos.x, mosPos.y)){
+				s = e;
+			}
+		}
+		return s;
 	}
 	
 	public void drawLights(){

@@ -1,12 +1,18 @@
 package com.sorrer.game.entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.sorrer.utils.Assets;
+import com.sorrer.utils.CamUtils;
 import com.sorrer.utils.Config;
 import com.sorrer.utils.Timer;
+import com.sorrer.utils.TimerUpdatable;
 import com.sorrer.utils.Units;
 import com.sorrer.utils.entity.Entity;
 import com.sorrer.utils.entity.EntityID;
@@ -33,23 +39,26 @@ public class BaseLight extends Entity{
 	
 	Color color;
 	
-	Timer timer;
+	TimerUpdatable timer;
 	
 	PointLight light;
 	
 	boolean isBurntOut = false;
 	
+	boolean burningOut = false;
+	
 	float x,y;
 	
 	LightSourceType lType;
 	
+	ParticleEffect fire;
 	public BaseLight(LightSourceType l, float x, float y){
-		
+		fire = new ParticleEffect(Assets.fire_particle);
 		this.lType = l;
 		
 		this.ID = EntityID.light;
 		
-		timer = new Timer(1000 * 20);
+		timer = new TimerUpdatable(1000 * 20);
 		timer.start();
 		
 		this.x = x;
@@ -81,12 +90,18 @@ public class BaseLight extends Entity{
 			this.fuelMax = 50;
 			this.fuelBurnRate = 4;
 			this.brightness = 0.8f;
+
+			this.burntOut = new Sprite(Assets.manager.get(Assets.fire_pit_empty));
+			this.base = new Sprite(Assets.manager.get(Assets.fire_pit_full));
+			
 			break;
 		default:
 			break;
 		}
+		
+		this.fire.scaleEffect(0.4f);
 
-		color = new Color(222f / 255f, 211f / 255f, 144f / 255f, this.brightness);
+		color = new Color(250f / 255f, 245f / 255f, 215f / 255f, this.brightness);
 	}
 	
 	/**
@@ -105,13 +120,15 @@ public class BaseLight extends Entity{
 	
 	@Override
 	public void update() {
+		burningOut = false;
+		timer.update();
 		this.burntOut.setPosition(x, y);
 		this.base.setPosition(x, y);
 		
 		if(timer.isDone()){
 			timer.start();
 			this.currentStoredFuel -= this.fuelBurnRate;
-			if(this.currentStoredFuel < 0){
+			if(this.currentStoredFuel <= 0){
 				this.currentStoredFuel = 0;
 				this.isBurntOut = true;
 			}else{
@@ -119,7 +136,9 @@ public class BaseLight extends Entity{
 			}
 		}
 		
-		if(this.currentStoredFuel <= this.fuelBurnRate){
+		if(this.currentStoredFuel <= this.fuelBurnRate && !this.isBurntOut){
+			burningOut = true;
+			this.light.setActive(true);
 			this.diameterAdjustment = -(this.diameter * timer.getProgress());
 			this.brightnessAdjustment = -(timer.getProgress());
 			
@@ -130,7 +149,12 @@ public class BaseLight extends Entity{
 			if(this.brightness + this.brightnessAdjustment < 0){
 				this.brightnessAdjustment = -this.brightness;
 			}
+			this.fire.scaleEffect(.4f - timer.getProgress()*.4f);
+		}else if(this.isBurntOut){
+			this.fire.scaleEffect(0);
+			this.light.setActive(false);
 		}else{
+			this.light.setActive(true);
 			this.diameterAdjustment = 0;
 			this.brightnessAdjustment = 0;
 		}
@@ -139,13 +163,23 @@ public class BaseLight extends Entity{
 		this.light.setColor(this.color);
 		this.light.setDistance(this.diameter + this.diameterAdjustment);
 		this.light.setPosition(getCenterPos());
+		this.fire.setPosition(getCenterPos().x, getCenterPos().y);
+		this.fire.update(Gdx.graphics.getDeltaTime());
 		
-		System.out.println( this.lType + " " + this.currentStoredFuel + " " + this.fuelMax + " " + this.fuelBurnRate + " " + this.diameterAdjustment + " " + this.timer.getProgress() + " " + this.getCenterPos());
+   
 	}
 
 	@Override
 	public void draw(SpriteBatch b, ShapeRenderer sr) {
-		
+		if(isBurntOut){
+			this.burntOut.draw(b);
+		}else{
+			if(!burningOut)
+				this.base.draw(b);
+			else
+				this.burntOut.draw(b);
+			this.fire.draw(b);
+		}
 	}
 
 	@Override
@@ -156,6 +190,7 @@ public class BaseLight extends Entity{
 	@Override
 	public void addLights(RayHandler rayH) {
 		light = new PointLight(rayH, Config.AMOUNT_OF_RAYS, this.color, this.diameter - this.diameterAdjustment, getCenterPos().x, getCenterPos().y);
+		light.setXray(true);
 	}
 	
 	public Vector2 getCenterPos(){

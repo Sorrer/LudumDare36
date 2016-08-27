@@ -2,6 +2,7 @@ package com.sorrer.utils.entity;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.sorrer.utils.component.Component;
 import com.sorrer.utils.component.ComponentManager;
@@ -47,4 +48,8 @@ public abstract class Entity {
 	public abstract void addLights(RayHandler rayH);
 	public abstract Vector2 getPos();
 	public abstract Vector2 getSize();
+
+	public Rectangle getRectangle() {
+		return new Rectangle(this.getPos().x, this.getPos().y, this.getSize().x, this.getSize().y);
+	}
 }
