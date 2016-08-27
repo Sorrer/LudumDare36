@@ -23,6 +23,7 @@ import box2dLight.RayHandler;
 public class SplashScreen implements Screen {
 
 	Texture madeWithLibgdx;
+	Texture loading;
 	Timer timer;
 	SpriteBatch b;
 	long cur;
@@ -43,6 +44,7 @@ public class SplashScreen implements Screen {
 		cam.position.set(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 0);
 		cam.update();
 		madeWithLibgdx = new Texture(Gdx.files.internal("MadeWithLibgdx.png"));
+		loading = new Texture(Gdx.files.internal("Loading.png"));
 		world = new World(new Vector2(0, 0), false);
 		rayHandler = new RayHandler(world);
 		rayHandler.setCombinedMatrix(cam);
@@ -112,7 +114,7 @@ public class SplashScreen implements Screen {
 				if (System.currentTimeMillis() > cur + 60) {
 					cur = System.currentTimeMillis();
 					Random random = new Random();
-				
+					
 					lastFlicker = nextFlicker;
 					nextFlicker = random.nextFloat() + 0.1f;
 				}
@@ -139,6 +141,7 @@ public class SplashScreen implements Screen {
 					splashCount++;
 					return;
 				}
+				this.madeWithLibgdx = this.loading;
 				timer.start();
 				switchL = (switchL ? false : true);
 			}

@@ -45,10 +45,15 @@ public class GameScreen implements Screen{
 		this.buildings = new EntityManager(cam, world, b, sr);
 		
 		BaseLight bL = new BaseLight(LightSourceType.fire_pit, Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
+		BaseLight bL1 = new BaseLight(LightSourceType.camp_fire, 100, 100);
+				
+		bL1.addFuel(8);
 		bL.addFuel(8);
-		
-		this.buildings.add(bL);
 
+		this.buildings.add(bL);
+		this.buildings.add(bL1);
+
+		
 		RayHandler.useDiffuseLight(true);
 	
 		CamUtils.curCam = this.cam;
@@ -65,7 +70,7 @@ public class GameScreen implements Screen{
 		
 		if(Gdx.input.justTouched()){
 			Vector3 mCoords = CamUtils.mouseWorldCoords(cam);
-			BaseLight bL = new BaseLight(LightSourceType.fire_pit, mCoords.x, mCoords.y);
+			BaseLight bL = new BaseLight(LightSourceType.fire_stick, mCoords.x, mCoords.y);
 			bL.addFuel(8);
 			this.buildings.add(bL);
 		}
@@ -79,7 +84,7 @@ public class GameScreen implements Screen{
 		
 		b.setProjectionMatrix(cam.combined);
 		sr.setProjectionMatrix(cam.combined);
-		Gdx.gl.glClearColor(75f / 255f, 180 / 255f, 90 / 255f, 1);
+		Gdx.gl.glClearColor(60f / 255f, 180 / 255f, 90 / 255f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		b.begin();
 			this.buildings.draw();

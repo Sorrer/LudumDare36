@@ -15,14 +15,28 @@ public class Assets {
 	
 	public static final AssetDescriptor<FreeTypeFontGenerator> dialog = new AssetDescriptor<FreeTypeFontGenerator>("", FreeTypeFontGenerator.class);
 	
+	public static final AssetDescriptor<Texture> fire_stick = new AssetDescriptor<Texture>("fire_stick.png", Texture.class);
+	public static final AssetDescriptor<Texture> fire_stick_burntout = new AssetDescriptor<Texture>("fire_stick_burntout.png", Texture.class);
+
+	public static final AssetDescriptor<Texture> camp_fire = new AssetDescriptor<Texture>("camp_fire.png", Texture.class);
+	public static final AssetDescriptor<Texture> camp_fire_burntout = new AssetDescriptor<Texture>("camp_fire_burntout.png", Texture.class);
+
 	public static final AssetDescriptor<Texture> fire_pit_full = new AssetDescriptor<Texture>("fire_pit_full.png", Texture.class);
 	public static final AssetDescriptor<Texture> fire_pit_empty = new AssetDescriptor<Texture>("fire_pit_empty.png", Texture.class);
+
 	public static final ParticleEffect fire_particle = new ParticleEffect();
 	
 	public static void load(){
 		fire_particle.load(Gdx.files.internal("fire.particle"), Gdx.files.internal(""));
 		manager.load(fire_pit_empty);
 		manager.load(fire_pit_full);
+		
+		manager.load(camp_fire);
+		manager.load(camp_fire_burntout);
+		
+		manager.load(fire_stick);
+		manager.load(fire_stick_burntout);
+		
 		freeTypeManager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(new InternalFileHandleResolver()));
 	}
 	

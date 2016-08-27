@@ -6,12 +6,9 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.sorrer.utils.Assets;
-import com.sorrer.utils.CamUtils;
 import com.sorrer.utils.Config;
-import com.sorrer.utils.Timer;
 import com.sorrer.utils.TimerUpdatable;
 import com.sorrer.utils.Units;
 import com.sorrer.utils.entity.Entity;
@@ -22,14 +19,11 @@ import box2dLight.RayHandler;
 
 public class BaseLight extends Entity{
 	
-	private float diameter = 0;
-	private float diameterAdjustment = 0;
+	private float diameter = 0, diameterAdjustment = 0;
 	
-	private float brightness = 0;
-	private float brightnessAdjustment = 0;
+	private float brightness = 0, brightnessAdjustment = 0;
 	
-	private float fuelMax = 0;
-	private float currentStoredFuel = 0;
+	private float fuelMax = 0, currentStoredFuel = 0;
 	
 	/** Every Minute This much fuel gets consumed**/
 	private float fuelBurnRate = 0;
@@ -43,11 +37,11 @@ public class BaseLight extends Entity{
 	
 	PointLight light;
 	
-	boolean isBurntOut = false;
-	
-	boolean burningOut = false;
+	boolean isBurntOut = false, burningOut = false;
 	
 	float x,y;
+	
+	float fireStrength = 1f, delay = 1000 * 20;;
 	
 	LightSourceType lType;
 	
@@ -58,8 +52,7 @@ public class BaseLight extends Entity{
 		
 		this.ID = EntityID.light;
 		
-		timer = new TimerUpdatable(1000 * 20);
-		timer.start();
+		
 		
 		this.x = x;
 		this.y = y;
@@ -75,32 +68,50 @@ public class BaseLight extends Entity{
 		switch(l){
 		case fire_stick:
 			this.diameter = Units.metersToPixels(0.5f);
-			this.fuelMax = 12;
-			this.fuelBurnRate = 6;
+			this.fuelMax = 10;
+			this.fuelBurnRate = 2;
 			this.brightness = 0.7f;
+			this.fireStrength = 0.1f;
+			this.delay = 10000 * 10;
+
+			this.burntOut = new Sprite(Assets.manager.get(Assets.fire_stick_burntout));
+			this.base = new Sprite(Assets.manager.get(Assets.fire_stick));
 			break;
+			
 		case camp_fire:
 			this.diameter = Units.metersToPixels(1f);
 			this.fuelMax = 20;
 			this.fuelBurnRate = 10;
 			this.brightness = 0.8f;
+			this.fireStrength = 0.3f;
+			this.delay = 10000 * 15;
+			
+
+			this.burntOut = new Sprite(Assets.manager.get(Assets.camp_fire_burntout));
+			this.base = new Sprite(Assets.manager.get(Assets.camp_fire));
 			break;
+			
 		case fire_pit:
 			this.diameter = Units.metersToPixels(2f);
 			this.fuelMax = 50;
 			this.fuelBurnRate = 4;
 			this.brightness = 0.8f;
+			this.fireStrength = 0.4f;
+			this.delay = 10000 * 20;
 
 			this.burntOut = new Sprite(Assets.manager.get(Assets.fire_pit_empty));
 			this.base = new Sprite(Assets.manager.get(Assets.fire_pit_full));
 			
 			break;
+			
 		default:
 			break;
 		}
 		
-		this.fire.scaleEffect(0.4f);
-
+		this.fire.scaleEffect(fireStrength);
+		timer = new TimerUpdatable((int) this.delay);
+		timer.start();
+		
 		color = new Color(250f / 255f, 245f / 255f, 215f / 255f, this.brightness);
 	}
 	
@@ -149,7 +160,8 @@ public class BaseLight extends Entity{
 			if(this.brightness + this.brightnessAdjustment < 0){
 				this.brightnessAdjustment = -this.brightness;
 			}
-			this.fire.scaleEffect(.4f - timer.getProgress()*.4f);
+			
+			this.fire.scaleEffect(fireStrength - timer.getProgress()*fireStrength);
 		}else if(this.isBurntOut){
 			this.fire.scaleEffect(0);
 			this.light.setActive(false);
