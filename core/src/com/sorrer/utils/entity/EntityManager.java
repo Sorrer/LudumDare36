@@ -3,8 +3,12 @@ package com.sorrer.utils.entity;
 import java.io.Serializable;
 import java.util.LinkedList;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.physics.box2d.World;
+
+import box2dLight.RayHandler;
 
 public class EntityManager implements Serializable{
 	private static final long serialVersionUID = -4300150299681062101L;
@@ -12,6 +16,27 @@ public class EntityManager implements Serializable{
 	private LinkedList<Entity> entitiesUpdate = new LinkedList<Entity>();
 	private LinkedList<Entity> bufferEntities = new LinkedList<Entity>();
 	private LinkedList<Entity> debufferEntities = new LinkedList<Entity>();
+	private RayHandler rays;
+	
+	private SpriteBatch b;
+	private ShapeRenderer sr;
+	private OrthographicCamera cam;
+	
+	public EntityManager(World world, SpriteBatch b, ShapeRenderer sr){
+		rays = new RayHandler(world);
+	}
+	
+	public void setBatch(SpriteBatch b){
+		this.b = b;
+	}
+	
+	public void setShapeRenderer(ShapeRenderer sr){
+		this.sr = sr;
+	}
+	
+	public void setCamera(OrthographicCamera c){
+		this.cam = c;
+	}
 	
 	public void update(){
 		for(Entity e: entitiesUpdate){
@@ -30,7 +55,7 @@ public class EntityManager implements Serializable{
 		updateQueue();
 	}
 	
-	public void draw(SpriteBatch b, ShapeRenderer sr){
+	public void draw(){
 		for(Entity e: entities){
 			if(e.isTrash()){
 				e.dispose();
@@ -44,8 +69,18 @@ public class EntityManager implements Serializable{
 		updateQueue();
 	}
 	
+	public void drawLights(){
+		rays.setCombinedMatrix(cam);
+		rays.updateAndRender();
+	}
+	
 	private void updateQueue(){
 		for(Entity e : bufferEntities){
+			if(!e.addedLights){
+				e.addedLights = true;
+				e.addLights(rays);
+			}
+			
 			if(e.updates()){
 				entitiesUpdate.add(e);
 			}

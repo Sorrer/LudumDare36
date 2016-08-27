@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.sorrer.game.CoreGame;
 import com.sorrer.utils.entity.EntityManager;
 
@@ -16,6 +17,7 @@ public class GameScreen implements Screen{
 	SpriteBatch b;
 	ShapeRenderer sr;
 	
+	World world;
 	EntityManager buildings;
 	
 	public GameScreen(CoreGame g){
@@ -23,7 +25,7 @@ public class GameScreen implements Screen{
 		
 		b = new SpriteBatch();
 		sr = new ShapeRenderer();
-		buildings = new EntityManager();
+		buildings = new EntityManager(world, b, sr);
 		
 		this.cam = new OrthographicCamera();
 		cam.viewportWidth = Gdx.graphics.getWidth();

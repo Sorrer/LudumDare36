@@ -8,12 +8,14 @@ import com.sorrer.utils.Units;
 import com.sorrer.utils.entity.Entity;
 import com.sorrer.utils.entity.EntityID;
 
+import box2dLight.RayHandler;
+
 public class BaseLight extends Entity{
 	
 	private float diameter = 0;
 	private float diameterAdjustment = 0;
 	
-	private int brightness = 0;
+	private float brightness = 0;
 	private float brightnessAdjustment = 0;
 	
 	private float fuelMax = 0;
@@ -50,16 +52,19 @@ public class BaseLight extends Entity{
 			this.diameter = Units.metersToPixels(0.5f);
 			this.fuelMax = 12;
 			this.fuelBurnRate = 6;
+			this.brightness = 0.7f;
 			break;
 		case camp_fire:
 			this.diameter = Units.metersToPixels(1f);
 			this.fuelMax = 20;
 			this.fuelBurnRate = 10;
+			this.brightness = 0.8f;
 			break;
 		case pit_fire:
 			this.diameter = Units.metersToPixels(2f);
 			this.fuelMax = 50;
 			this.fuelBurnRate = 4;
+			this.brightness = 0.8f;
 			break;
 		default:
 			break;
@@ -100,6 +105,14 @@ public class BaseLight extends Entity{
 		if(this.currentStoredFuel <= this.fuelBurnRate){
 			this.diameterAdjustment = -(this.diameter * timer.getProgress());
 			this.brightnessAdjustment = -(timer.getProgress());
+			
+			if(this.diameterAdjustment < this.diameter){
+				this.diameterAdjustment = -this.diameter;
+			}
+			
+			if(this.brightnessAdjustment < this.brightness){
+				this.brightnessAdjustment = -this.brightness;
+			}
 		}else{
 			this.diameterAdjustment = 0;
 			this.brightnessAdjustment = 0;
@@ -113,6 +126,12 @@ public class BaseLight extends Entity{
 
 	@Override
 	public void dispose() {
+		
+	}
+
+	@Override
+	public void addLights(RayHandler rayH) {
+		// TODO Auto-generated method stub
 		
 	}
 

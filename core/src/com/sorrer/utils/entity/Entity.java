@@ -5,12 +5,15 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.sorrer.utils.component.Component;
 import com.sorrer.utils.component.ComponentManager;
 
+import box2dLight.RayHandler;
+
 public abstract class Entity {
 	
 	private ComponentManager components = new ComponentManager();
 	protected EntityID ID = EntityID.none;
 	protected boolean doesUpdate = true;
 	protected boolean trash = false;
+	protected boolean addedLights = false;
 	
 	public Entity(){}
 	
@@ -40,4 +43,5 @@ public abstract class Entity {
 	public abstract void update();
 	public abstract void draw(SpriteBatch b, ShapeRenderer sr);
 	public abstract void dispose();
+	public abstract void addLights(RayHandler rayH);
 }
