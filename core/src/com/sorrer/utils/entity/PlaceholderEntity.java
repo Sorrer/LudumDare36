@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import box2dLight.RayHandler;
 
 public class PlaceholderEntity extends Entity{
-
+	
 	@Override
 	public void update() {
 		
@@ -27,7 +27,12 @@ public class PlaceholderEntity extends Entity{
 	public void addLights(RayHandler rayH) {
 		
 	}
-
+	
+	@Override
+	public void setPos(float x, float y){
+		
+	}
+	
 	@Override
 	public Vector2 getPos() {
 		return new Vector2(0,0);

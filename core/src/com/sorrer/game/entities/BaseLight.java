@@ -45,6 +45,8 @@ public class BaseLight extends Entity{
 	
 	LightSourceType lType;
 	
+	ProgressBar progress;
+	
 	ParticleEffect fire;
 	public BaseLight(LightSourceType l, float x, float y){
 		fire = new ParticleEffect(Assets.fire_particle);
@@ -72,8 +74,12 @@ public class BaseLight extends Entity{
 			this.fuelBurnRate = 2;
 			this.brightness = 0.7f;
 			this.fireStrength = 0.1f;
-			this.delay = 10000 * 10;
-
+			this.delay = 1000 * 10f;
+			this.fuelType = FuelType.wood;
+			
+			progress = new ProgressBar(this.x - 30, this.y + 5, 10 ,this.getSize().y * .8f, this.fuelMax, this.currentStoredFuel);
+			progress.flip();
+			
 			this.burntOut = new Sprite(Assets.manager.get(Assets.fire_stick_burntout));
 			this.base = new Sprite(Assets.manager.get(Assets.fire_stick));
 			break;
@@ -84,9 +90,11 @@ public class BaseLight extends Entity{
 			this.fuelBurnRate = 10;
 			this.brightness = 0.8f;
 			this.fireStrength = 0.3f;
-			this.delay = 10000 * 15;
-			
+			this.delay = 1000 * 5f;
+			this.fuelType = FuelType.wood;
 
+			progress = new ProgressBar(this.x + (this.getSize().x - this.getSize().x * .8f)/2, this.y - 10, this.getSize().x * .8f, 10, this.fuelMax, this.currentStoredFuel);
+			
 			this.burntOut = new Sprite(Assets.manager.get(Assets.camp_fire_burntout));
 			this.base = new Sprite(Assets.manager.get(Assets.camp_fire));
 			break;
@@ -97,8 +105,11 @@ public class BaseLight extends Entity{
 			this.fuelBurnRate = 4;
 			this.brightness = 0.8f;
 			this.fireStrength = 0.4f;
-			this.delay = 10000 * 20;
+			this.delay = 1000 * 10f;
+			this.fuelType = FuelType.wood;
 
+			progress = new ProgressBar(this.x + (this.getSize().x - this.getSize().x * .8f)/2, this.y - 10, this.getSize().x * .8f, 10, this.fuelMax, this.currentStoredFuel);
+			
 			this.burntOut = new Sprite(Assets.manager.get(Assets.fire_pit_empty));
 			this.base = new Sprite(Assets.manager.get(Assets.fire_pit_full));
 			
@@ -129,6 +140,11 @@ public class BaseLight extends Entity{
 		return (space > amount ? 0 : amount - space);
 	}
 	
+	public boolean isBurningOut(){
+		return this.isBurntOut ? this.isBurntOut : this.burningOut;
+	}
+	
+	
 	@Override
 	public void update() {
 		burningOut = false;
@@ -139,12 +155,12 @@ public class BaseLight extends Entity{
 		if(timer.isDone()){
 			timer.start();
 			this.currentStoredFuel -= this.fuelBurnRate;
-			if(this.currentStoredFuel <= 0){
-				this.currentStoredFuel = 0;
-				this.isBurntOut = true;
-			}else{
-				this.isBurntOut = false;
-			}
+		}
+		if(this.currentStoredFuel <= 0){
+			this.currentStoredFuel = 0;
+			this.isBurntOut = true;
+		}else{
+			this.isBurntOut = false;
 		}
 		
 		if(this.currentStoredFuel <= this.fuelBurnRate && !this.isBurntOut){
@@ -160,10 +176,7 @@ public class BaseLight extends Entity{
 			if(this.brightness + this.brightnessAdjustment < 0){
 				this.brightnessAdjustment = -this.brightness;
 			}
-			
-			this.fire.scaleEffect(fireStrength - timer.getProgress()*fireStrength);
 		}else if(this.isBurntOut){
-			this.fire.scaleEffect(0);
 			this.light.setActive(false);
 		}else{
 			this.light.setActive(true);
@@ -178,7 +191,22 @@ public class BaseLight extends Entity{
 		this.fire.setPosition(getCenterPos().x, getCenterPos().y);
 		this.fire.update(Gdx.graphics.getDeltaTime());
 		
-   
+		if(this.isBurntOut || this.isBurningOut()){
+			progress.setCurrent(0);
+		}else{
+			progress.setCurrent(this.currentStoredFuel);
+		}
+		progress.setMax(this.fuelMax);
+		
+		if(progress.getProgress() < .1f){
+			progress.setColor(Color.RED);
+		}else if(progress.getProgress() < .25f){
+			progress.setColor(Color.ORANGE);
+		}else if(progress.getProgress() < .5f){
+			progress.setColor(Color.YELLOW);
+		}else{
+			progress.setColor(Color.GREEN);
+		}
 	}
 
 	@Override
@@ -186,12 +214,14 @@ public class BaseLight extends Entity{
 		if(isBurntOut){
 			this.burntOut.draw(b);
 		}else{
-			if(!burningOut)
+			if(!burningOut){
 				this.base.draw(b);
-			else
+				this.fire.draw(b);
+			}else
 				this.burntOut.draw(b);
-			this.fire.draw(b);
 		}
+		
+		progress.draw(b, sr);
 	}
 
 	@Override
@@ -205,10 +235,9 @@ public class BaseLight extends Entity{
 		light.setXray(true);
 	}
 	
-	public Vector2 getCenterPos(){
-		float w = (this.isBurntOut ? this.burntOut.getWidth() : this.base.getWidth());
-		float h = (this.isBurntOut ? this.burntOut.getHeight() : this.base.getHeight());
-		return new Vector2(this.x + w/2, this.y + h/2);
+	@Override
+	public void setPos(float x, float y){
+		this.x = x; this.y = y;
 	}
 
 	@Override

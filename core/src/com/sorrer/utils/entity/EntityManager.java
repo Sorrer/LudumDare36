@@ -140,6 +140,21 @@ public class EntityManager implements Serializable{
 		debufferEntities.clear();
 	}
 	
+	public LinkedList<Entity> getEntities(){
+		return this.entities;
+	}
+	
+	/** Returns list of entities that should be rendered next frame ( on screen ) **/
+	public LinkedList<Entity> getEntitiesRenderable(){
+		LinkedList<Entity> t = new LinkedList<Entity>();
+		for(Entity e : this.entities){
+			if(e.getRectangle().overlaps(CamUtils.getRectangle(cam))){
+				t.add(e);
+			}
+		}
+		return t;
+	}
+	
 	@Override
 	public String toString(){
 		String u = "['EntitiesUpdate' |Size: " + this.entities.size();

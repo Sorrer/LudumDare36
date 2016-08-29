@@ -70,6 +70,7 @@ public class SplashScreen implements Screen {
 	boolean oncePressed = false;
 	@Override
 	public void render(float delta) {
+		Assets.manager.update();
 		
 		if((Gdx.input.isKeyPressed(Keys.ANY_KEY) || Gdx.input.isTouched()) && !oncePressed){
 			oncePressed = true;

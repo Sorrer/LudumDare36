@@ -22,10 +22,10 @@ public class CamUtils {
 	}
 	
 	public static Rectangle getRectangle(OrthographicCamera cam){
-		return new Rectangle(cam.position.x, cam.position.y, cam.viewportWidth, cam.viewportHeight);
+		return new Rectangle(cam.position.x - cam.viewportWidth/2, cam.position.y - cam.viewportHeight/2, cam.viewportWidth, cam.viewportHeight);
 	}
 	
 	public static Rectangle getRectangle(){
-		return new Rectangle(curCam.position.x, curCam.position.y, curCam.viewportWidth, curCam.viewportHeight);
+		return new Rectangle(curCam.position.x - curCam.viewportWidth/2, curCam.position.y - curCam.viewportHeight/2, curCam.viewportWidth, curCam.viewportHeight);
 	}
 }
